@@ -1,32 +1,56 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
+open Fsharp21.Random
 
-type Face =
-  | Two = 0 | Three = 1 | Four = 2 | Five = 3
-  | Six = 4 | Seven = 5 | Eight = 6 | Nine = 7
-  | Ten = 8 | Jack = 9  | Queen = 10 | King = 11
-  | Ace = 12
+module Card =
+  type Face =
+    | Two = 0 | Three = 1 | Four = 2 | Five = 3
+    | Six = 4 | Seven = 5 | Eight = 6 | Nine = 7
+    | Ten = 8 | Jack = 9  | Queen = 10 | King = 11
+    | Ace = 12
 
-type Suit =
-  | Hearts = 0
-  | Spade = 1
-  | Diamond = 2
-  | Clubs = 3
+  type Suit =
+    | Hearts = 0
+    | Spade = 1
+    | Diamond = 2
+    | Clubs = 3
 
-type Card = { Face: Face; Suit: Suit }
+  type Card = { Face: Face; Suit: Suit }
 
-type Deck = Card List
-type Hand = Card List
+  type Deck = Card List
+  type Hand = Card List
 
-let createCard face suit =
-  { Face = face; Suit = suit }
+  let createCard face suit =
+    { Face = face; Suit = suit }
 
-let createDeck () :Deck = [
-   for face in unbox (Enum.GetValues(typeof<Face>)) do
-   for suit in unbox (Enum.GetValues(typeof<Suit>)) do
-   yield createCard face suit
-]
+  let shuffle = List.sortBy random
+
+  let createDeck () :Deck = shuffle [
+     for face in unbox (Enum.GetValues(typeof<Face>)) do
+     for suit in unbox (Enum.GetValues(typeof<Suit>)) do
+     yield createCard face suit
+  ]
+
+  let getCardValue card =
+    match card.Face with
+    | Face.Two -> 2
+    | Face.Three -> 3
+    | Face.Four -> 4
+    | Face.Five -> 5
+    | Face.Six -> 6
+    | Face.Seven -> 7
+    | Face.Eight -> 8
+    | Face.Nine -> 9
+    | Face.Ten -> 10
+    | Face.Jack -> 11
+    | Face.Queen -> 12
+    | Face.King -> 13
+    | _ -> 14
+
+  let isAce card = card.Face = Face.Ace
+
+open Card
 
 let runWithTuple fn (x, y) =
   fn x y
@@ -40,24 +64,6 @@ let createPlayers n =
   [1..n]
     |> List.map (fun i -> ((sprintf "%s %i" "Player" i), i))
     |> List.map (runWithTuple (createPlayer 17))
-
-let getCardValue card =
-  match card.Face with
-  | Face.Two -> 2
-  | Face.Three -> 3
-  | Face.Four -> 4
-  | Face.Five -> 5
-  | Face.Six -> 6
-  | Face.Seven -> 7
-  | Face.Eight -> 8
-  | Face.Nine -> 9
-  | Face.Ten -> 10
-  | Face.Jack -> 11
-  | Face.Queen -> 12
-  | Face.King -> 13
-  | _ -> 14
-
-let isAce card = card.Face = Face.Ace
 
 let getAces = List.filter isAce
 
@@ -90,14 +96,6 @@ let rec dealToDone player deck =
   then dealToDone newPlayer newDeck
   else (newPlayer, newDeck)
 
-let randomFactory (rand:Random) _ =
-  rand.Next ()
-
-let random =
-  randomFactory (Random())
-
-let shuffle = List.sortBy random
-
 let cardToString card =
   sprintf "%A of %A" card.Face card.Suit
 
@@ -119,7 +117,7 @@ let initGameState numberOfPlayers =
   players = createPlayers numberOfPlayers;
   dealer = createPlayer 17 "Dealer" 0;
   results = [];
-  deck = createDeck () |> shuffle;
+  deck = createDeck ();
   discardPile = []
 }
 
