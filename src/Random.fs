@@ -1,9 +1,9 @@
-namespace Fsharp21
-  open System
+namespace FSharp21
+open System
 
-  module Random =
-    let randomFactory (rand:Random) _ =
-      rand.Next ()
+module Random =
+  let randomFactory (rand:Random) _ =
+    rand.Next ()
 
-    let random _ =
-      randomFactory (Random()) ()
+  let random _ =
+    randomFactory (Random()) ()

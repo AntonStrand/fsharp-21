@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="src/Random.fs" />
+    <Compile Include="src/Card.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
