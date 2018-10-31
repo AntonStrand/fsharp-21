@@ -12,7 +12,7 @@ let createPlayer limit name id =
   { Name = name; Limit = limit; Hand = List<Card>.Empty; id = id }
 
 let createPlayers n =
-  List.map ((fun i -> ((sprintf "%s %i" "Player" i), i)) >> (runWithTuple (createPlayer 17))) [1..n]
+  [1..n] |> List.map (fun i -> createPlayer 17 (sprintf "%s %i" "Player" i) i)
 
 let getAces = List.filter isAce
 
