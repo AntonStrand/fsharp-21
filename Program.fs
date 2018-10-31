@@ -96,8 +96,7 @@ let randomFactory (rand:Random) _ =
 let random =
   randomFactory (Random())
 
-let shuffle xs =
-  xs |> List.sortBy random
+let shuffle = List.sortBy random
 
 let cardToString card =
   sprintf "%A of %A" card.Face card.Suit
