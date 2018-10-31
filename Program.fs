@@ -111,7 +111,7 @@ let playerToString player =
   else sprintf "%s has not played" player.Name
 
 let generateResult dealer player =
-  sprintf "%s\n%s\n%s wins!"
+  sprintf "\n%s\n%s\n%s wins!"
     (playerToString player)
     (playerToString dealer)
     (getWinnerName dealer player)
@@ -150,11 +150,12 @@ let rec playAll players gameState =
 let separatePlayers state =
   (state.players, state)
 
-let printLine s = printfn "\n%A\n" s 
 
 let presentResult gameState =
+  Console.Clear()
+  Console.WriteLine "The results"
   gameState.results
-    |> List.map printLine |> ignore
+    |> List.map Console.WriteLine |> ignore
 
 
 let play =
