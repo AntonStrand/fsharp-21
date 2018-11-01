@@ -2,43 +2,11 @@
 
 open System
 open FSharp21.Card
-
-type Player = { Name:String; Hand: Hand; Limit:int; id:int }
-
-let createPlayer limit name id =
-  { Name = name; Limit = limit; Hand = List<Card>.Empty; id = id }
-
-let createPlayers n =
-  [1..n] |> List.map (fun i -> createPlayer 17 (sprintf "%s %i" "Player" i) i)
-
-let getAces = List.filter isAce
-
-let shouldReduce (aces:Card list) total =
-  total > 21 && not aces.IsEmpty
-
-let rec reduceAceWorth aces total =
-  if (shouldReduce aces total)
-  then reduceAceWorth (List.tail aces) (total - 13)
-  else total
-
-let sumCards = List.map getCardValue >> List.sum
-
-let calcHandValue hand =
-  reduceAceWorth (getAces hand) (sumCards hand)
-
-let deal player card =
-  { player with Hand = player.Hand @ [card] }
-
-let drawCard (deck: Deck): Card * Deck =
-  (List.head deck, List.tail deck)
-
-let dealCard player deck =
-  let card, newDeck = drawCard deck
-  (deal player card, newDeck)
+open FSharp21.Player
 
 let rec dealToDone player deck =
   let newPlayer, newDeck = dealCard player deck
-  if (calcHandValue newPlayer.Hand < player.Limit)
+  if (calcHandValue newPlayer.hand < player.Limit)
   then dealToDone newPlayer newDeck
   else (newPlayer, newDeck)
 
@@ -47,8 +15,6 @@ let cardToString card =
 
 let handToString hand =
   hand |> List.map cardToString |> String.concat ", "
-
-let players = createPlayers 4
 
 type GameState = {
   players: Player list;
@@ -83,29 +49,18 @@ let dealToDealer gameState =
   let dealer, deck = dealToDone gameState.dealer gameState.deck
   { gameState with dealer = dealer; deck = deck; }
 
-let numberOfCards = List.length
-
-let isBusted player =
-  calcHandValue player.Hand > 21
-
-let has21 player =
-  calcHandValue player.Hand = 21
-
-let winningByNumberOfCards player =
-  (numberOfCards player.Hand) = 5 && has21 player
-
 let shouldDealerPlay player =
   not (isBusted player || has21 player || winningByNumberOfCards player)
 
 let getWinnerName dealer player =
-  if not (isBusted dealer) && calcHandValue dealer.Hand >= calcHandValue player.Hand
-  then dealer.Name
-  else player.Name
+  if not (isBusted dealer) && calcHandValue dealer.hand >= calcHandValue player.hand
+  then dealer.name
+  else player.name
 
 let playerToString player =
-  if calcHandValue player.Hand > 0
-  then sprintf "%s\'s hand is %A with a value of %i" player.Name (handToString player.Hand) (calcHandValue player.Hand)
-  else sprintf "%s has not played" player.Name
+  if calcHandValue player.hand > 0
+  then sprintf "%s\'s hand is %A with a value of %i" player.name (handToString player.hand) (calcHandValue player.hand)
+  else sprintf "%s has not played" player.name
 
 let generateResult dealer player =
   sprintf "\n%s\n%s\n%s wins!"
@@ -115,9 +70,6 @@ let generateResult dealer player =
 
 let addResult gameState player =
   { gameState with results = gameState.results @ [(generateResult gameState.dealer player)] }
-
-let discardCards player =
-  (player.Hand, { player with Hand = Hand.Empty })
 
 let resetRound gameState player =
   let playerCards, player = discardCards player

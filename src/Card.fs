@@ -48,3 +48,7 @@ module Card =
     | _ -> 14
 
   let isAce card = card.Face = Face.Ace
+
+  let drawCard (deck: Deck): Card * Deck =
+    (List.head deck, List.tail deck)
+
