@@ -3,9 +3,6 @@
 open System
 open FSharp21.Card
 
-let runWithTuple fn (x, y) =
-  fn x y
-
 type Player = { Name:String; Hand: Hand; Limit:int; id:int }
 
 let createPlayer limit name id =
@@ -76,11 +73,11 @@ let updatePlayer players player =
 let updateGameState gameState (player, newDeck) =
   { gameState with deck = newDeck; players = (updatePlayer gameState.players player) }
 
-let rec dealToAll players gameState =
+let rec dealToAll (players, gameState) =
   match players with
-  | [] -> gameState
+  | [] -> (gameState.players, gameState)
   | player::remainingPlayers ->
-    dealToAll remainingPlayers (updateGameState gameState (dealCard player gameState.deck))
+    dealToAll (remainingPlayers, (updateGameState gameState (dealCard player gameState.deck)))
 
 let dealToDealer gameState =
   let dealer, deck = dealToDone gameState.dealer gameState.deck
@@ -140,16 +137,14 @@ let playerRound gameState player =
   then finishRound (dealToDealer (updateGameState gameState (player, deck))) player
   else finishRound (updateGameState gameState (player, deck)) player
 
-
-let rec playAll players gameState =
-  match players with
-  | [] -> gameState
-  | player::remainingPlayers ->
-    playAll remainingPlayers (playerRound gameState player)
-
 let separatePlayers state =
   (state.players, state)
 
+let rec playAll (players, gameState) =
+  match players with
+  | [] -> gameState
+  | player::remainingPlayers ->
+    playAll (remainingPlayers, (playerRound gameState player))
 
 let presentResult gameState =
   Console.Clear()
@@ -157,10 +152,8 @@ let presentResult gameState =
   gameState.results
     |> List.map Console.WriteLine |> ignore
 
-
 let play =
-  presentResult << runWithTuple playAll << separatePlayers << runWithTuple dealToAll << separatePlayers << initGameState
-
+  presentResult << playAll << dealToAll << separatePlayers << initGameState
 
 let tryToInt (s:string) = 
   match System.Int32.TryParse s with
@@ -174,7 +167,6 @@ let maybeWithinScope x =
 
 let isValidInput x =
   tryToInt x |> Option.bind maybeWithinScope
-
 
 [<EntryPoint>]
 let main argv =
