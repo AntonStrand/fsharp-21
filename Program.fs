@@ -27,7 +27,7 @@ let calcHandValue hand =
   reduceAceWorth (getAces hand) (sumCards hand)
 
 let deal player card =
-  { player with Hand = List.append player.Hand [card] }
+  { player with Hand = player.Hand @ [card] }
 
 let drawCard (deck: Deck): Card * Deck =
   (List.head deck, List.tail deck)
