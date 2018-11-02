@@ -9,7 +9,7 @@ let play =
   presentResult << playAll << dealToAll <<initGameState
 
 [<EntryPoint>]
-let main argv =
+let main _ =
     printfn "Welcome to 21."
     printfn "Enter number of players."
     match isValidInput (Console.ReadLine()) with
