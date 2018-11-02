@@ -6,7 +6,7 @@ open FSharp21.Game
 open FSharp21.InputValidation
 
 let play =
-  presentResult << playAll << dealToAll <<initGameState
+  initGameState >> dealToAll >> playAll >> presentResult
 
 [<EntryPoint>]
 let main _ =
