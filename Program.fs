@@ -1,124 +1,12 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
-open FSharp21.Card
-open FSharp21.Player
-
-let rec dealToDone player deck =
-  let newPlayer, newDeck = dealCard player deck
-  if (calcHandValue newPlayer.hand < player.Limit)
-  then dealToDone newPlayer newDeck
-  else (newPlayer, newDeck)
-
-let cardToString card =
-  sprintf "%A of %A" card.Face card.Suit
-
-let handToString hand =
-  hand |> List.map cardToString |> String.concat ", "
-
-type GameState = {
-  players: Player list;
-  dealer: Player;
-  results: string list;
-  deck: Deck;
-  discardPile: Card List
-}
-
-let initGameState numberOfPlayers =
-  {
-  players = createPlayers numberOfPlayers;
-  dealer = createPlayer 17 "Dealer" 0;
-  results = [];
-  deck = createDeck ();
-  discardPile = []
-}
-
-let updatePlayer players player =
-  players |> List.map (fun p -> if (p.id = player.id) then player else p)
-
-let updateGameState gameState (player, newDeck) =
-  { gameState with deck = newDeck; players = (updatePlayer gameState.players player) }
-
-let rec dealToAll (players, gameState) =
-  match players with
-  | [] -> (gameState.players, gameState)
-  | player::remainingPlayers ->
-    dealToAll (remainingPlayers, (updateGameState gameState (dealCard player gameState.deck)))
-
-let dealToDealer gameState =
-  let dealer, deck = dealToDone gameState.dealer gameState.deck
-  { gameState with dealer = dealer; deck = deck; }
-
-let shouldDealerPlay player =
-  not (isBusted player || has21 player || winningByNumberOfCards player)
-
-let getWinnerName dealer player =
-  if not (isBusted dealer) && calcHandValue dealer.hand >= calcHandValue player.hand
-  then dealer.name
-  else player.name
-
-let playerToString player =
-  if calcHandValue player.hand > 0
-  then sprintf "%s\'s hand is %A with a value of %i" player.name (handToString player.hand) (calcHandValue player.hand)
-  else sprintf "%s has not played" player.name
-
-let generateResult dealer player =
-  sprintf "\n%s\n%s\n%s wins!"
-    (playerToString player)
-    (playerToString dealer)
-    (getWinnerName dealer player)
-
-let addResult gameState player =
-  { gameState with results = gameState.results @ [(generateResult gameState.dealer player)] }
-
-let resetRound gameState player =
-  let playerCards, player = discardCards player
-  let dealerCards, dealer = discardCards gameState.dealer
-  { gameState with
-      players = (updatePlayer gameState.players player);
-      dealer = dealer;
-      discardPile = gameState.discardPile @ playerCards @ dealerCards
-  }
-
-let finishRound gameState player =
-  resetRound (addResult gameState player) player
-
-let playerRound gameState player =
-  let player, deck = (dealToDone player gameState.deck)
-  if (shouldDealerPlay player)
-  then finishRound (dealToDealer (updateGameState gameState (player, deck))) player
-  else finishRound (updateGameState gameState (player, deck)) player
-
-let separatePlayers state =
-  (state.players, state)
-
-let rec playAll (players, gameState) =
-  match players with
-  | [] -> gameState
-  | player::remainingPlayers ->
-    playAll (remainingPlayers, (playerRound gameState player))
-
-let presentResult gameState =
-  Console.Clear()
-  Console.WriteLine "The results"
-  gameState.results
-    |> List.map Console.WriteLine |> ignore
+open FSharp21.View
+open FSharp21.Game
+open FSharp21.InputValidation
 
 let play =
-  presentResult << playAll << dealToAll << separatePlayers << initGameState
-
-let tryToInt (s:string) = 
-  match System.Int32.TryParse s with
-  | true, v -> Some v
-  | false, _ -> None
-
-let maybeWithinScope x =
-  if x > 0 && x < 10
-  then Some x
-  else None
-
-let isValidInput x =
-  tryToInt x |> Option.bind maybeWithinScope
+  presentResult << playAll << dealToAll <<initGameState
 
 [<EntryPoint>]
 let main argv =

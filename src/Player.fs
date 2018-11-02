@@ -1,12 +1,9 @@
 namespace FSharp21
 open System
+open FSharp21.Types
 open FSharp21.Card
 
 module Player =
-
-  type Hand = Card List
-
-  type Player = { name:String; hand: Hand; Limit:int; id:int }
 
   let createPlayer limit name id =
     { name = name; Limit = limit; hand = Hand.Empty; id = id }

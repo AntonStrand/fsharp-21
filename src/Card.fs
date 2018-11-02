@@ -1,24 +1,9 @@
 namespace FSharp21
 open System
+open FSharp21.Types
 open FSharp21.Random
 
 module Card =
-  type Face =
-    | Two = 0 | Three = 1 | Four = 2 | Five = 3
-    | Six = 4 | Seven = 5 | Eight = 6 | Nine = 7
-    | Ten = 8 | Jack = 9  | Queen = 10 | King = 11
-    | Ace = 12
-
-  type Suit =
-    | Hearts = 0
-    | Spade = 1
-    | Diamond = 2
-    | Clubs = 3
-
-  type Card = { Face: Face; Suit: Suit }
-
-  type Deck = Card List
-
   let createCard face suit =
     { Face = face; Suit = suit }
 
