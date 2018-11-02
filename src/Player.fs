@@ -3,6 +3,9 @@ open System
 open FSharp21.Card
 
 module Player =
+
+  type Hand = Card List
+
   type Player = { name:String; hand: Hand; Limit:int; id:int }
 
   let createPlayer limit name id =

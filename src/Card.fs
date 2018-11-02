@@ -18,7 +18,6 @@ module Card =
   type Card = { Face: Face; Suit: Suit }
 
   type Deck = Card List
-  type Hand = Card List
 
   let createCard face suit =
     { Face = face; Suit = suit }
