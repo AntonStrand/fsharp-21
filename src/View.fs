@@ -1,7 +1,6 @@
 namespace FSharp21
 open System
 open FSharp21.Types
-open FSharp21.Card
 open FSharp21.Player
 
 module View =
