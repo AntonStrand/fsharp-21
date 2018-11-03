@@ -32,5 +32,3 @@ module View =
     Console.WriteLine "The results"
     gameState.results
       |> List.map Console.WriteLine |> ignore
-
-open View
