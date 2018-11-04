@@ -33,6 +33,11 @@ module Card =
 
   let isAce card = card.Face = Face.Ace
 
+  let reshuffle deck discardPile =
+    deck @ discardPile |> shuffle
+
+  let canDrawCard deck =
+    List.length deck > 1
+
   let drawCard (deck: Deck): Card * Deck =
     (List.head deck, List.tail deck)
-

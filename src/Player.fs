@@ -26,12 +26,12 @@ module Player =
   let calcHandValue hand =
     reduceAceWorth (getAces hand) (sumCards hand)
 
-  let deal player card =
+  let dealToPlayer player card =
     { player with hand = player.hand @ [card] }
 
-  let dealCard player deck =
-    let card, newDeck = drawCard deck
-    (deal player card, newDeck)
+  let deal player deck =
+    let card, newDeck = drawCard deck 
+    (dealToPlayer player card, newDeck)
 
   let numberOfCards = List.length
 

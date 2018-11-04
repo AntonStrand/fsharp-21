@@ -23,21 +23,29 @@ module Game =
   let updateGameState gameState (player, newDeck) =
     { gameState with deck = newDeck; players = (updatePlayer gameState.players player) }
 
+  let reuseDiscardedCards gameState =
+    { gameState with deck = (reshuffle gameState.deck gameState.discardPile); discardPile = [] }
+
+  let rec dealCard player gameState =
+    if not (canDrawCard gameState.deck)
+    then dealCard player (reuseDiscardedCards gameState)
+    else (fst (deal player gameState.deck), updateGameState gameState (deal player gameState.deck))
+
   let rec dealToAll (players, gameState) =
     match players with
     | [] -> (gameState.players, gameState)
     | player::remainingPlayers ->
-      dealToAll (remainingPlayers, (updateGameState gameState (dealCard player gameState.deck)))
+      dealToAll (remainingPlayers, (snd (dealCard player gameState)))
 
-  let rec dealToDone player deck =
-    let newPlayer, newDeck = dealCard player deck
+  let rec dealToDone player gameState =
+    let newPlayer, newState = dealCard player gameState
     if (calcHandValue newPlayer.hand < player.Limit)
-    then dealToDone newPlayer newDeck
-    else (newPlayer, newDeck)
+    then dealToDone newPlayer newState
+    else (newPlayer, newState)
 
   let dealToDealer gameState =
-    let dealer, deck = dealToDone gameState.dealer gameState.deck
-    { gameState with dealer = dealer; deck = deck; }
+    let dealer, newState = dealToDone gameState.dealer gameState
+    { newState with dealer = dealer }
 
   let shouldDealerPlay player =
     not (isBusted player || has21 player || winningByNumberOfCards player)
@@ -58,10 +66,10 @@ module Game =
     resetRound (addResult gameState player) player
 
   let playerRound gameState player =
-    let player, deck = (dealToDone player gameState.deck)
+    let player, state = (dealToDone player gameState)
     if (shouldDealerPlay player)
-    then finishRound (dealToDealer (updateGameState gameState (player, deck))) player
-    else finishRound (updateGameState gameState (player, deck)) player
+    then finishRound (dealToDealer { state with players = (updatePlayer state.players player) }) player
+    else finishRound ({ state with players = (updatePlayer state.players player) }) player
 
   let rec playAll (players, gameState) =
     match players with
