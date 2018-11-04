@@ -3,8 +3,7 @@ open System
 
 module KnuthFisherYatesShuffle =
 
-  let replaceAt i v list =
-    list |> List.mapi (fun j x -> if (j = i) then v else x)
+  let replaceAt i v = List.mapi (fun j x -> if (j = i) then v else x)
 
   let swap f t list =
     let tempF = List.item f list
