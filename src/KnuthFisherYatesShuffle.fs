@@ -5,10 +5,10 @@ module KnuthFisherYatesShuffle =
 
   let replaceAt i v = List.mapi (fun j x -> if (j = i) then v else x)
 
-  let swap f t list =
-    let tempF = List.item f list
-    let tempT = List.item t list
-    replaceAt f tempT (replaceAt t tempF list)
+  let swap i j list =
+    let x = List.item i list
+    let y = List.item j list
+    replaceAt i y (replaceAt j x list)
 
   let shuffle xs =
     let rnd = Random()
