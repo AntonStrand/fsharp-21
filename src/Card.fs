@@ -1,13 +1,11 @@
 namespace FSharp21
 open System
 open FSharp21.Types
-open FSharp21.Random
+open FSharp21.KnuthFisherYatesShuffle
 
 module Card =
   let createCard face suit =
     { Face = face; Suit = suit }
-
-  let shuffle = List.sortBy random
 
   let createDeck () :Deck = shuffle [
      for face in unbox (Enum.GetValues(typeof<Face>)) do

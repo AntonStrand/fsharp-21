@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <Compile Include="src/Types.fs" />
-    <Compile Include="src/Random.fs" />
+    <Compile Include="src/KnuthFisherYatesShuffle.fs" />
     <Compile Include="src/Card.fs" />
     <Compile Include="src/Player.fs" />
     <Compile Include="src/View.fs" />
