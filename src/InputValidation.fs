@@ -7,7 +7,7 @@ module InputValidation =
     | false, _ -> None
 
   let maybeWithinScope x =
-    if x > 0 && x < 10
+    if x > 0 && x < 31
     then Some x
     else None
 
