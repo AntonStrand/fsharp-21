@@ -16,7 +16,7 @@ module View =
     else sprintf "%s has not played" player.name
 
   let getWinnerName dealer player =
-    if not (isBusted dealer) && calcHandValue dealer.hand >= calcHandValue player.hand
+    if (isBusted player) || not (isBusted dealer) && calcHandValue dealer.hand >= calcHandValue player.hand
     then dealer.name
     else player.name
 
