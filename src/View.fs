@@ -10,9 +10,14 @@ module View =
   let handToString hand =
     hand |> List.map cardToString |> String.concat ", "
 
+  let bustedComment player =
+    if isBusted player
+    then "(BUSTED)"
+    else ""
+
   let playerToString player =
     if calcHandValue player.hand > 0
-    then sprintf "%s\'s hand is %A with a value of %i" player.name (handToString player.hand) (calcHandValue player.hand)
+    then sprintf "%s\'s hand is %A with a value of %i %s" player.name (handToString player.hand) (calcHandValue player.hand) (bustedComment player)
     else sprintf "%s has not played" player.name
 
   let getWinnerName dealer player =
